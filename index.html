@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora de Física Vibrante</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(45deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF);
+        background-size: 600% 600%;
+        animation: gradientAnim 15s ease infinite;
+        color: #fff;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    @keyframes gradientAnim {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Triángulos decorativos */
+    .triangulo-superior {
+        width: 100%;
+        height: 40px;
+        background: linear-gradient(90deg, #FFD700, #FF8C00);
+        position: relative;
+    }
+
+    .triangulo-inferior {
+        width: 100%;
+        height: 40px;
+        background: linear-gradient(90deg, #FF1493, #FF69B4);
+        position: relative;
+    }
+
+    /* Sidebar vertical */
+    .sidebar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50px;
+        height: 100%;
+        background-color: #00CED1;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 15px;
+        box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+        text-align: center;
+    }
+
+    h1, h2 {
+        margin: 10px 0;
+        color: #FFD700;
+        text-shadow: 2px 2px 5px #000;
+    }
+
+    select, input, button {
+        padding: 10px;
+        margin: 5px 0;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    button {
+        cursor: pointer;
+        background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00);
+        color: #000;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+
+    .resultado, .claseResumida, .notaTecnica {
+        margin-top: 10px;
+        font-weight: bold;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .claseResumida {
+        background: linear-gradient(135deg, #FF69B4, #8A2BE2);
+        color: #fff;
+        text-align: left;
+    }
+
+    .notaTecnica {
+        background: linear-gradient(135deg, #00FF7F, #00CED1);
+        color: #000;
+        font-size: 0.9em;
+        margin-top: 15px;
+        border-left: 5px solid #FFD700;
+        font-weight: normal;
+    }
+
+    .resultado {
+        background: linear-gradient(135deg, #00BFFF, #1E90FF);
+        color: #fff;
+        font-size: 16px;
+    }
+
+    .calculo-seccion {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #fff;
+    }
+
+    /* Colores por tipo de cálculo */
+    .caida { background: linear-gradient(135deg, #FF4500, #FF6347); }
+    .avion { background: linear-gradient(135deg, #1E90FF, #00BFFF); }
+    .proyectil { background: linear-gradient(135deg, #FFD700, #FFA500); }
+    .velocidadMedia { background: linear-gradient(135deg, #32CD32, #00FF00); }
+</style>
+</head>
+<body>
+<div class="triangulo-superior"></div>
+<div class="sidebar"></div>
+<div class="container">
+    <h1>Calculadora de Física Vibrante 🌈</h1>
+    <div class="notaTecnica" id="notaTecnica">
+        ⚠️ Nota Técnica: Física ideal. La resistencia del aire no se considera.
+    </div>
+    <h2>Selecciona el cálculo:</h2>
+    <select id="tipoCalculo" onchange="mostrarFormulario()">
+        <option value="">--Elige--</option>
+        <option value="caida">Caída de un objeto</option>
+        <option value="avion">Tiempo de vuelo</option>
+        <option value="proyectil">Proyectil</option>
+        <option value="velocidadMedia">Velocidad media</option>
+    </select>
+    <div id="claseResumida" class="claseResumida"></div>
+    <div id="formulario" class="calculo-seccion"></div>
+    <div class="resultado" id="resultado"></div>
+</div>
+<div class="triangulo-inferior"></div>
+
+<script>
+class CalculadoraFisica {
+    constructor(gravedad = 9.8) { this.g = gravedad; }
+    tiempoCaida(h) { return Math.sqrt(2*h/this.g); }
+    tiempoAvion(d,v) { return d/v; }
+    tiempoProyectil(h,v0,ang) {
+        let rad = ang*Math.PI/180;
+        let Vy = v0*Math.sin(rad);
+        return (Vy + Math.sqrt(Vy*Vy + 2*this.g*h))/this.g;
+    }
+    velocidadMedia(d,t) { return d/t; }
+}
+
+const calc = new CalculadoraFisica();
+
+function mostrarClaseResumida(tipo){
+    const div = document.getElementById('claseResumida');
+    div.className = "claseResumida " + tipo;
+    if(tipo==="caida") div.innerHTML = `<b>Clase:</b> Caída libre. t=√(2h/g)<br><b>Ej:</b> h=10m → t≈1.43s`;
+    else if(tipo==="avion") div.innerHTML = `<b>Clase:</b> MRU. t=d/v<br><b>Ej:</b> d=1000km, v=500km/h → t=2h`;
+    else if(tipo==="proyectil") div.innerHTML = `<b>Clase:</b> Proyectil con altura inicial. t=(Vy+√(Vy²+2gh))/g<br><b>Ej:</b> h=0,v=20,θ=45° → t≈2.04s`;
+    else if(tipo==="velocidadMedia") div.innerHTML = `<b>Clase:</b> Velocidad media. v=d/t<br><b>Ej:</b> d=100m, t=10s → v=10 m/s`;
+    else div.innerHTML="";
+}
+
+function mostrarFormulario(){
+    const tipo=document.getElementById('tipoCalculo').value;
+    mostrarClaseResumida(tipo);
+    const div=document.getElementById('formulario');
+    const res=document.getElementById('resultado');
+    res.innerText="";
+    div.className="calculo-seccion "+tipo;
+    div.innerHTML="";
+    if(tipo==="caida") div.innerHTML=`<label>Altura (m):</label><input type="number" id="altura" placeholder="Ej:10"><button onclick="calcularCaida()">Calcular</button>`;
+    else if(tipo==="avion") div.innerHTML=`<label>Distancia (km):</label><input type="number" id="distancia" placeholder="Ej:1000"><label>Velocidad (km/h):</label><input type="number" id="velocidad" placeholder="Ej:500"><button onclick="calcularAvion()">Calcular</button>`;
+    else if(tipo==="proyectil") div.innerHTML=`<label>Altura (m):</label><input type="number" id="altura" placeholder="Ej:0"><label>Velocidad (m/s):</label><input type="number" id="velocidad" placeholder="Ej:20"><label>Ángulo (°):</label><input type="number" id="angulo" placeholder="Ej:45"><button onclick="calcularProyectil()">Calcular</button>`;
+    else if(tipo==="velocidadMedia") div.innerHTML=`<label>Distancia (m):</label><input type="number" id="distancia" placeholder="Ej:100"><label>Tiempo (s):</label><input type="number" id="tiempo" placeholder="Ej:10"><button onclick="calcularVelocidadMedia()">Calcular</button>`;
+}
+
+// Funciones de cálculo
+function calcularCaida(){ const h=parseFloat(document.getElementById('altura').value); if(isNaN(h)||h<0) return alert("Altura inválida"); document.getElementById('resultado').innerText=`Tiempo de caída: ${calc.tiempoCaida(h).toFixed(2)} s`;}
+function calcularAvion(){ const d=parseFloat(document.getElementById('distancia').value); const v=parseFloat(document.getElementById('velocidad').value); if(isNaN(d)||isNaN(v)||d<=0||v<=0) return alert("Valores inválidos"); document.getElementById('resultado').innerText=`Tiempo de vuelo: ${calc.tiempoAvion(d,v).toFixed(2)} h`;}
+function calcularProyectil(){ const h=parseFloat(document.getElementById('altura').value); const v0=parseFloat(document.getElementById('velocidad').value); const ang=parseFloat(document.getElementById('angulo').value); if(isNaN(h)||isNaN(v0)||isNaN(ang)||v0<0) return alert("Valores inválidos"); document.getElementById('resultado').innerText=`Tiempo de vuelo proyectil: ${calc.tiempoProyectil(h,v0,ang).toFixed(2)} s`;}
+function calcularVelocidadMedia(){ const d=parseFloat(document.getElementById('distancia').value); const t=parseFloat(document.getElementById('tiempo').value); if(isNaN(d)||isNaN(t)||d<=0||t<=0) return alert("Valores inválidos"); document.getElementById('resultado').innerText=`Velocidad media: ${calc.velocidadMedia(d,t).toFixed(2)} m/s`;}
+</script>
+
+</body>
+</html>
